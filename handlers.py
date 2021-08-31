@@ -5,7 +5,7 @@ True, если шаг пройден, и False, если данные введе
 
 import re
 
-from config import notify_scenario
+from config import SCENARIOS
 
 
 def handle_date(text, context):
@@ -123,7 +123,7 @@ def handle_meters_data(text, context):
         else:
             # Текущий счетчик последний -> переход с текущего шага на финальный Шаг 3 -> отправка письма со всеми
             # полученными показаниями счетчиков
-            notify_scenario['steps']['step_2']['next_step'] = 'step_3'
+            SCENARIOS['notify_2_meters_or_more']['steps']['step_2']['next_step'] = 'step_3'
         return True
     else:
         return False

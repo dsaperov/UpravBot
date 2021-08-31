@@ -50,31 +50,6 @@ INTENTS_SUBSCRIBED = [
     },
 ]
 
-notify_scenario = {
-        'first_step': 'step_1',
-        'steps': {
-            'step_1': {
-                'text': 'Добрый день! Сегодня - день отправки данных счетчиков. Отправьте мне показания счетчика '
-                        '"{current_meter}". В качестве десятичного разделителя используйте точку. Например: 100.0.',
-                'failure_text': 'Использован неверный формат. Попробуйте еще раз.',
-                'handler': 'handle_meters_data',
-                'next_step': None
-            },
-            'step_2': {
-                'text': 'Теперь отправьте мне показания счетчика {current_meter}',
-                'failure_text': 'Использован неверный формат. Попробуйте еще раз.',
-                'handler': 'handle_meters_data',
-                'next_step': None
-            },
-            'step_3': {
-                'text': 'Данные приняты. Письмо на указанный адрес электронной почты отправлено.',
-                'failure_text': None,
-                'handler': None,
-                'next_step': None
-            }
-        }
-    }
-
 SCENARIOS = {
     'set_configs': {
         'first_step': 'step_1',
@@ -192,9 +167,49 @@ SCENARIOS = {
             }
         }
     },
-    'notify': notify_scenario
+    'notify_1_meter': {
+        'first_step': 'step_1',
+        'steps': {
+            'step_1': {
+                'text': 'Добрый день! Сегодня - день отправки данных счетчиков. Отправьте мне показания счетчика '
+                        '"{current_meter}". В качестве десятичного разделителя используйте точку. Например: 100.0.',
+                'failure_text': 'Использован неверный формат. Попробуйте еще раз.',
+                'handler': 'handle_meters_data',
+                'next_step': 'step_2'
+            },
+            'step_2': {
+                'text': 'Данные приняты. Письмо на указанный адрес электронной почты отправлено.',
+                'failure_text': None,
+                'handler': None,
+                'next_step': None
+            }
+        }
+    },
+    'notify_2_meters_or_more': {
+        'first_step': 'step_1',
+        'steps': {
+            'step_1': {
+                'text': 'Добрый день! Сегодня - день отправки данных счетчиков. Отправьте мне показания счетчика '
+                        '"{current_meter}". В качестве десятичного разделителя используйте точку. Например: 100.0.',
+                'failure_text': 'Использован неверный формат. Попробуйте еще раз.',
+                'handler': 'handle_meters_data',
+                'next_step': 'step_2'
+            },
+            'step_2': {
+                'text': 'Теперь отправьте мне показания счетчика {current_meter}',
+                'failure_text': 'Использован неверный формат. Попробуйте еще раз.',
+                'handler': 'handle_meters_data',
+                'next_step': 'step_2'
+            },
+            'step_3': {
+                'text': 'Данные приняты. Письмо на указанный адрес электронной почты отправлено.',
+                'failure_text': None,
+                'handler': None,
+                'next_step': None
+            }
+        }
+    }
 }
-
 
 DEFAULT_ANSWER_NON_SUBSCRIBED = 'Для того, чтобы начать использование, просто спросите меня о том, что я могу или ' \
                                 'введите "Помощь".'

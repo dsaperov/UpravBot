@@ -7,6 +7,7 @@ from models import SubscribedUsers
 
 
 class Scheduler(BackgroundScheduler):
+    """Планировщик задач."""
 
     def schedule_all_notifications(self, bot):
         """

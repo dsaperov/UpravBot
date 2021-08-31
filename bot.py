@@ -132,10 +132,9 @@ class Bot:
         first_step_name = scenario['first_step']
         step = scenario['steps'][first_step_name]
         text_to_send = step['text']
-        if scenario_name == 'notify':
+        if 'notify' in scenario_name:
             current_meter = meters[0]
             context = {'current_meter': current_meter, 'meters_data': {}, 'meters_ordered': meters}
-
         else:
             context = {}
         UserState(user_id=user_id, scenario_name=scenario_name, step_name=first_step_name, context=context)
@@ -186,22 +185,25 @@ class Bot:
         """
         user_id = user_state.user_id
         context = user_state.context
+        scenario_name = user_state.scenario_name
         log.debug(f'Выполнение сценария для пользователя {user_id} завершено со следующими данными: '
                   f'{user_state.context}')
-        if user_state.scenario_name == 'notify':
+        if 'notify' in scenario_name:
             # Завершается сценарий notify -> отправить емейл, удалить из БД запись о состоянии пользователя в контексте
             # продвижения по сценарию и запланировать отправку пользователю уведомления vk в следующем месяце
             send_email(context, user_subscribed)
+            if 'notify_2_meters_or_more' in scenario_name:
+                # Приведение сценария "notify_2_meters_or_more" к конфигурации по умолчанию
+                config.SCENARIOS['notify_2_meters_or_more']['steps']['step_2']['next_step'] = 'step_2'
             log.debug(f'Сообщение с показаниями на электронный адрес {user_subscribed.email} отправлено')
             user_state.delete()
             self.scheduler.schedule_notification(bot, user_subscribed.date, user_id, user_subscribed.meters)
             return
-        if user_subscribed:
-            # Пользователь уже подписан -> редактирование уже занесенной в БД записи
+        if 'edit' in scenario_name:
+            # Редактирование уже занесенной в БД записи
             user_subscribed.set(**context)
         else:
-            # Пользователь еще не подписан -> занесение записи с данными пользователя в БД и планирование отправки
-            # уведомления vk
+            # Занесение записи с данными пользователя в БД и планирование отправки уведомления vk
             SubscribedUsers(user_id=user_id, **context)
             self.scheduler.schedule_notification(bot, context['date'], user_id, context['meters'])
         user_state.delete()
@@ -215,40 +217,14 @@ class Bot:
 
         :param dict meters: строка, в которой перечислены типы счетчиков, показания которых следует передать
         """
-        scenario_name = 'notify'
-        self._set_notify_scenario_config(meters)
+        meters_count = len(meters)
+        scenario_name = 'notify_1_meter' if meters_count == 1 else 'notify_2_meters_or_more'
         text_to_send = bot.start_scenario(user_id, scenario_name, meters)
         user_state = UserState.get(user_id=user_id)
         text_to_send_formatted = text_to_send.format(**user_state.context)
         log.info('Отправляем пользователю уведомление о необходимости отправки показаний счетчиков.')
         random_id = randint(1, 2 ** 20)
         bot.api.messages.send(user_id=user_id, random_id=random_id, message=text_to_send_formatted)
-
-    @staticmethod
-    def _set_notify_scenario_config(meters):
-        """
-        Настройка конфигурации сценария "notify" в зависимости от количества счетчиков, показания которых следует
-        запросить у пользователя
-        :param meters:
-        :return:
-        """
-        meters_count = len(meters)
-        if meters_count == 1:
-            # Счетчик единственный -> переход с Шага 1 на финальный Шаг 3 -> отправка письма с показаниями счетчика
-            # после получения показаний по нему
-            config.notify_scenario['steps']['step_1']['next_step'] = 'step_3'
-        if meters_count > 1:
-            # Счетчиков больше одного -> переход с Шага 1 на Шаг 2 -> запрос показателей второго счетчика после того,
-            # как показания по первому были получены
-            config.notify_scenario['steps']['step_1']['next_step'] = 'step_2'
-        if meters_count == 2:
-            # Счетчиков два -> переход с Шага 2 на финальный Шаг 3 -> отправка письма с показаниями счетчиков после
-            # того, как показания по второму счетчику были получены
-            config.notify_scenario['steps']['step_2']['next_step'] = 'step_3'
-        if meters_count > 2:
-            # Счетчиков больше двух -> переход с Шага 2 на Шаг 2 -> запрос показателей третьего и последующих счетчиков
-            # после того, как показания по второму были получены
-            config.notify_scenario['steps']['step_2']['next_step'] = 'step_2'
 
 
 if __name__ == '__main__':
