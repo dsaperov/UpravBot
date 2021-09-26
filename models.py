@@ -19,7 +19,7 @@ class SubscribedUsers(database.Entity):
     user_id = Required(str, unique=True)
     date = Required(int)
     email = Required(str)
-    flat = Required(int)
+    address = Required(str)
     name = Required(str)
     meters = Required(str)
 

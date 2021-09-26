@@ -42,18 +42,18 @@ def handle_email(text, context):
         return False
 
 
-def handle_flat(text, context):
-    """Обработка сообщения пользователя с номером квартиры.
+def handle_address(text, context):
+    """Обработка сообщения пользователя с адресом.
 
     :param str text: текст сообщения пользователя
     :param pony.orm.ormtypes.TrackedDict context: содержит информацию, предоставляемую пользователем в ходе продвижения
     по сценарию. После заверешения сценария данные из context будут перенесены в таблицу subscribedusers.
     """
-    flat_pattern = r'^[0-9]+$'
+    address_pattern = r'^.*\d.*$'
 
-    match = re.search(flat_pattern, text)
+    match = re.search(address_pattern, text)
     if match:
-        context['flat'] = text
+        context['address'] = text
         return True
     else:
         return False
@@ -66,9 +66,9 @@ def handle_name(text, context):
     :param pony.orm.ormtypes.TrackedDict context: содержит информацию, предоставляемую пользователем в ходе продвижения
     по сценарию. После заверешения сценария данные из context будут перенесены в таблицу subscribedusers.
     """
-    flat_pattern = r'^\w+$'
+    name_pattern = r'^\w+$'
 
-    match = re.search(flat_pattern, text)
+    match = re.search(name_pattern, text)
     if match:
         context['name'] = text.capitalize()
         return True
