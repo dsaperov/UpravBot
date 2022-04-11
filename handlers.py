@@ -5,7 +5,7 @@ True, если шаг пройден, и False, если данные введе
 
 import re
 
-from config import SCENARIOS
+from config import SCENARIOS, EMAIL_SUBJECT_TEXT
 
 
 def handle_date(text, context):
@@ -49,7 +49,8 @@ def handle_address(text, context):
     :param pony.orm.ormtypes.TrackedDict context: содержит информацию, предоставляемую пользователем в ходе продвижения
     по сценарию. После заверешения сценария данные из context будут перенесены в таблицу subscribedusers.
     """
-    address_pattern = r'^.*\d.*$'
+    max_address_length = 255 - len(EMAIL_SUBJECT_TEXT + ', ')
+    address_pattern = fr'^(?=[А-я])(?=.*?\d).{{2,{max_address_length}}}$'
 
     match = re.search(address_pattern, text)
     if match:
