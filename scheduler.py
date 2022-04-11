@@ -32,8 +32,11 @@ class Scheduler(BackgroundScheduler):
         """
         now = datetime.now()
         year, month = now.year, now.month
-        notification_date = datetime(year, month, notification_day, hour=3)
-        if notification_date < now:
-            notification_date = datetime(year, month + 1, notification_day, hour=3)
+        notification_datetime = datetime(year, month, notification_day, hour=3)
+        if notification_datetime < now:
+            if month < 12:
+                notification_datetime = datetime(year, month + 1, notification_day, hour=3)
+            else:
+                notification_datetime = datetime(year + 1, 1, notification_day, hour=3)
         meters_list = meters.split(', ')
-        self.add_job(bot.send_notification_message, next_run_time=notification_date, args=[user_id, meters_list])
+        self.add_job(bot.send_notification_message, next_run_time=notification_datetime, args=[user_id, meters_list])
