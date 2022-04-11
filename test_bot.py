@@ -12,6 +12,7 @@ from models import SubscribedUsers, UserState
 import config
 
 
+@patch('bot.log', new=Mock(), create=True)
 class RunTest(TestCase):
     RAW_EVENT = {
         'type': 'message_new',
@@ -51,8 +52,8 @@ class RunTest(TestCase):
         '21',
         'upravdom@my_house.com',
         'upravdom@myhouse.com',
-        '100.0',
-        '99',
+        '.' * 256,
+        'кв. 99',
         'Jones.01',
         'Алекс',
         'cold, hot, electricity',
@@ -75,8 +76,7 @@ class RunTest(TestCase):
         config.SCENARIOS['set_configs']['steps']['step_6']['text'].format(date=INPUTS[4])
     ]
 
-    @staticmethod
-    def test_run():
+    def test_run(self):
         events_number = randint(10, 50)
         events_content = randint(1, 9)
         events_list = [events_content for _ in range(events_number)]
