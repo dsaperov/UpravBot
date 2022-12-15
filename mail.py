@@ -17,7 +17,6 @@ def send_email(context, user_data):
     msg = MIMEMultipart()
     msg['From'] = EMAIL_FROM
     msg['To'], msg['Subject'], body = get_email_data(context, user_data)
-
     msg.attach(MIMEText(body, 'plain'))
 
     server = smtplib.SMTP('smtp.gmail.com:587')
@@ -39,15 +38,15 @@ def get_email_data(context, user_data):
     типы счетчиков)
     """
     email_to = user_data.email
-    subject = f'Показания счётчиков, кв. {user_data.address}'
+    subject = f'Показания счётчиков, {user_data.address}'
 
-    text = 'Добрый день! Прилагаю показания счетчиков.\n\n'
+    body = 'Добрый день! Прилагаю показания счетчиков.\n\n'
     meters_data = context['meters_data']
     for meter_name in context['meters_ordered']:
-        text += f'{meter_name} - {meters_data[meter_name]}\n'
-    text += '\n' \
+        body += f'{meter_name} - {meters_data[meter_name]}\n'
+    body += '\n' \
             '---\n' \
             'С уважением,\n' \
             f'{user_data.name}'
 
-    return email_to, subject, text
+    return email_to, subject, body
