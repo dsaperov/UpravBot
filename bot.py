@@ -191,11 +191,15 @@ class Bot:
         if 'notify' in scenario_name:
             # Завершается сценарий notify -> отправить емейл, удалить из БД запись о состоянии пользователя в контексте
             # продвижения по сценарию и запланировать отправку пользователю уведомления vk в следующем месяце
-            send_email(context, user_subscribed)
+            errors = send_email(context, user_subscribed)
             if 'notify_2_meters_or_more' in scenario_name:
                 # Приведение сценария "notify_2_meters_or_more" к конфигурации по умолчанию
                 config.SCENARIOS['notify_2_meters_or_more']['steps']['step_2']['next_step'] = 'step_2'
-            log.debug(f'Сообщение с показаниями на электронный адрес {user_subscribed.email} отправлено')
+            if not errors:
+                msg = f'Сообщение с показаниями на электронный адрес {user_subscribed.email} отправлено'
+            else:
+                msg = str(errors)
+            log.info(msg)
             user_state.delete()
             self.scheduler.schedule_notification(bot, user_subscribed.date, user_id, user_subscribed.meters)
             return
