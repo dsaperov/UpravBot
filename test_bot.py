@@ -1,12 +1,15 @@
+import os
 from copy import deepcopy
 from random import randint
 from unittest import TestCase, main
 from unittest.mock import Mock, patch
 
+import requests
 from pony.orm import db_session
 from vk_api.bot_longpoll import VkBotMessageEvent
 
 import bot
+from mail import send_email
 from models import SubscribedUsers, UserState
 
 import config
@@ -139,6 +142,71 @@ class RunTest(TestCase):
         for table in (SubscribedUsers, UserState):
             test_record = table.get(user_id=test_id)
             test_record.delete() if test_record else None
+
+
+class SendEmailTest(TestCase):
+    METER_VALUE = 100
+
+    TEST_EMAIL_ADDRESS = os.getenv('TEST_EMAIL_ADDRESS')
+    TEST_EMAIL_INBOX_ID = os.getenv('TEST_EMAIL_INBOX_ID')
+    TEST_EMAIL_LOGIN = os.getenv('TEST_EMAIL_LOGIN')
+    TEST_EMAIL_PASSWORD = os.getenv('TEST_EMAIL_PASSWORD')
+
+    ATTRIBUTE = 'attribute'
+    OPERATOR = 'operator'
+    VALUE = 'value'
+    REQUEST_FILTER_PARAMETERS = [{
+        ATTRIBUTE: 'sender.email',
+        OPERATOR: 'eq',
+        VALUE: config.EMAIL_FROM
+    }]
+
+    def setUp(self):
+        self.context = {'meters_data': {COLD_WATER_METER: self.METER_VALUE, HOT_WATER_METER: self.METER_VALUE},
+                        'meters_ordered': [COLD_WATER_METER, HOT_WATER_METER]}
+        self.user_data = Mock()
+        self.user_data.name = USERNAME
+        self.user_data.email = self.TEST_EMAIL_ADDRESS
+        self.user_data.address = ADDRESS
+
+    def test_send_email(self):
+        inbox_url = f'https://api.mailspons.com/api/v1/inboxes/{self.TEST_EMAIL_INBOX_ID}/messages'
+        auth_data = (self.TEST_EMAIL_LOGIN, self.TEST_EMAIL_PASSWORD)
+
+        self.clear_inbox(inbox_url, auth_data)
+
+        send_email(self.context, self.user_data)
+
+        emails_in_inbox = self.check_inbox(inbox_url, auth_data)
+        number_of_emails_in_inbox = len(emails_in_inbox)
+        assert number_of_emails_in_inbox != 0
+
+    @staticmethod
+    def clear_inbox(request_url, auth_data):
+        response = requests.delete(f'{request_url}', auth=auth_data)
+        if response.status_code != 204:
+            raise AssertionError('Something went wrong while sending clear inbox request to the server. Response '
+                                 f'status code: {response.status_code}')
+        print("Message deleted successfully.")
+
+    def check_inbox(self, request_url, auth_data):
+        filter_parameters_string = self._get_filter_parameters_string()
+        response = requests.get(f'{request_url}?filter{filter_parameters_string}', auth=auth_data)
+        if response.status_code != 200:
+            raise AssertionError('Something went wrong while sending check inbox request to the server. Response '
+                                 f'status code: {response.status_code}')
+        print("Inbox checked successfully.")
+        return response.json()['data']
+
+    def _get_filter_parameters_string(self):
+        filter_parameters_string = ''
+        for parameters_dict in self.REQUEST_FILTER_PARAMETERS:
+            attribute = parameters_dict[self.ATTRIBUTE]
+            operator = parameters_dict[self.OPERATOR]
+            value = parameters_dict[self.VALUE]
+            filter_parameters_string += f'[{attribute}][{operator}]={value}'
+        filter_parameters_string += '&waitForResults=1'
+        return filter_parameters_string
 
 
 if __name__ == '__main__':
