@@ -239,7 +239,7 @@ DEFAULT_ANSWER_SUBSCRIBED = 'Если хотите изменить параме
                             'Если больше не хотите польоваться сервисом, отправьте "Больше не пиши мне".'
 
 DATABASE_CONFIG = {
-    'provider': 'postgres',
+    'provider': 'mysql',
     'user': os.getenv('DATABASE_USERNAME'),
     'password': os.getenv('DATABASE_PASSWORD'),
     'host': os.getenv('DATABASE_HOST'),
