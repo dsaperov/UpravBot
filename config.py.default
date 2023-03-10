@@ -1,7 +1,12 @@
-TOKEN = ''
+import os
+
+TOKEN = os.getenv('TOKEN')
 GROUP_ID = 204386139
 
 EMAIL_SUBJECT_TEXT = 'Показания счетчиков'
+EMAIL_FROM = 'upravbot.service@inbox.ru'
+EMAIl_PASSWORD = os.getenv('EMAIL_PASSWORD')
+
 
 INTENTS_NON_SUBSCRIBED = [
     {
@@ -234,11 +239,8 @@ DEFAULT_ANSWER_SUBSCRIBED = 'Если хотите изменить параме
 
 DATABASE_CONFIG = {
     'provider': 'postgres',
-    'user': '',
-    'password': '',
-    'host': '',
-    'database': ''
+    'user': os.getenv('DATABASE_USERNAME'),
+    'password': os.getenv('DATABASE_PASSWORD'),
+    'host': os.getenv('DATABASE_HOST'),
+    'database': os.getenv('DATABASE_NAME')
 }
-
-EMAIL_FROM = "upravbot.service@gmail.com"
-EMAIl_PASSWORD = ""
