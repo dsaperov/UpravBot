@@ -157,7 +157,7 @@ class Bot:
         step = steps[user_state.step_name]
 
         handler = getattr(handlers, step['handler'])
-        if handler(text, user_state.context):
+        if handler(text, user_state):
             # Данные введены по верному шаблону -> handler возвращает True -> переход на следующий шаг
             next_step_name = step['next_step']
             next_step = steps[next_step_name]
