@@ -11,6 +11,12 @@ from models import SubscribedUsers, UserState
 
 import config
 
+USERNAME = 'Александр'
+COLD_WATER_METER = 'холодная вода'
+HOT_WATER_METER = 'горячая вода'
+HEAT_METER = 'отопление'
+ADDRESS = 'кв. 1'
+
 
 @patch('bot.log', new=Mock(), create=True)
 class RunTest(TestCase):
@@ -53,11 +59,11 @@ class RunTest(TestCase):
         'upravdom@my_house.com',
         'upravdom@myhouse.com',
         '.' * 256,
-        'кв. 99',
+        ADDRESS,
         'Jones.01',
-        'Алекс',
+        USERNAME,
         'cold, hot, electricity',
-        'холодная вода, гор. вода, отопление'
+        f'{COLD_WATER_METER}, {HOT_WATER_METER}, {HEAT_METER}'
     ]
 
     EXPECTED_OUTPUTS = [
