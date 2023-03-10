@@ -1,3 +1,7 @@
+# Load environment variables
+from dotenv import load_dotenv
+load_dotenv()
+
 import logging
 
 from pony.orm import db_session
