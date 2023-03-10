@@ -118,7 +118,7 @@ class RunTest(TestCase):
 
         with patch('bot.VkBotLongPoll', return_value=long_poll_mock):
             with patch('scheduler.Scheduler.schedule_notification', return_value=None):
-                with patch('bot.bot',  create=True, return_value=Mock):
+                with patch('bot.bot', create=True, return_value=Mock):
                     test_bot = bot.Bot('', '', scheduler)
                     test_bot.api = api_mock
                     test_bot.run()
