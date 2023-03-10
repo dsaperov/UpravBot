@@ -5,11 +5,7 @@ from random import randint
 import vk_api
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 
-try:
-    import config
-except ImportError:
-    exit('Do "cp config.py.default config.py" and set the TOKEN, DATABASE_CONFIG, EMAIl_PASSWORD')
-
+import config
 import handlers
 from mail import send_email
 from models import UserState, SubscribedUsers
