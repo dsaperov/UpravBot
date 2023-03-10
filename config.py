@@ -6,7 +6,8 @@ GROUP_ID = 204386139
 EMAIL_SUBJECT_TEXT = 'Показания счетчиков'
 EMAIL_FROM = 'upravbot.service@inbox.ru'
 EMAIl_PASSWORD = os.getenv('EMAIL_PASSWORD')
-
+EMAIL_HOST = 'smtp.mail.ru'
+EMAIL_PORT = 465
 
 INTENTS_NON_SUBSCRIBED = [
     {
