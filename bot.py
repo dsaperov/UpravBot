@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import logging
+from smtplib import SMTPException
 
 from pony.orm import db_session
 from random import randint
@@ -191,7 +192,10 @@ class Bot:
         if 'notify' in scenario_name:
             # Завершается сценарий notify -> отправить емейл, удалить из БД запись о состоянии пользователя в контексте
             # продвижения по сценарию и запланировать отправку пользователю уведомления vk в следующем месяце
-            errors = send_email(context, user_subscribed)
+            try:
+                errors = send_email(context, user_subscribed)
+            except SMTPException as e:
+                log.error(e.__class__.__name__ + ': ' + str(e))
             if 'notify_2_meters_or_more' in scenario_name:
                 # Приведение сценария "notify_2_meters_or_more" к конфигурации по умолчанию
                 config.SCENARIOS['notify_2_meters_or_more']['steps']['step_2']['next_step'] = 'step_2'
