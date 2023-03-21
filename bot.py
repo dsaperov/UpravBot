@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import logging
+import threading
 from smtplib import SMTPException
 
 from pony.orm import db_session
@@ -15,6 +16,7 @@ import handlers
 from mail import send_email
 from models import UserState, SubscribedUsers
 from scheduler import Scheduler
+from web_server import run_server
 
 
 def configure_logging():
@@ -244,4 +246,6 @@ if __name__ == '__main__':
 
     bot = Bot(config.TOKEN, config.GROUP_ID, scheduler)
     scheduler.schedule_all_notifications(bot)
+
+    threading.Thread(target=run_server).start()
     bot.run()
