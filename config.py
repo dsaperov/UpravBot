@@ -1,11 +1,11 @@
-import os
+from utils import getenv_or_throw_exception
 
-TOKEN = os.getenv('TOKEN')
+TOKEN = getenv_or_throw_exception('TOKEN')
 GROUP_ID = 204386139
 
 EMAIL_SUBJECT_TEXT = 'Показания счетчиков'
 EMAIL_FROM = 'upravbot.service@inbox.ru'
-EMAIl_PASSWORD = os.getenv('EMAIL_PASSWORD')
+EMAIl_PASSWORD = getenv_or_throw_exception('EMAIL_PASSWORD')
 EMAIL_HOST = 'smtp.mail.ru'
 EMAIL_PORT = 465
 
@@ -240,8 +240,8 @@ DEFAULT_ANSWER_SUBSCRIBED = 'Если хотите изменить параме
 
 DATABASE_CONFIG = {
     'provider': 'mysql',
-    'user': os.getenv('DATABASE_USERNAME'),
-    'password': os.getenv('DATABASE_PASSWORD'),
-    'host': os.getenv('DATABASE_HOST'),
-    'database': os.getenv('DATABASE_NAME')
+    'user': getenv_or_throw_exception('DATABASE_USERNAME'),
+    'password': getenv_or_throw_exception('DATABASE_PASSWORD'),
+    'host': getenv_or_throw_exception('DATABASE_HOST'),
+    'database': getenv_or_throw_exception('DATABASE_NAME')
 }
