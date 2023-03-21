@@ -1,3 +1,4 @@
+import logging
 import os
 from copy import deepcopy
 from random import randint
@@ -187,7 +188,7 @@ class SendEmailTest(TestCase):
         if response.status_code != 204:
             raise AssertionError('Something went wrong while sending clear inbox request to the server. Response '
                                  f'status code: {response.status_code}')
-        print("Message deleted successfully.")
+        logging.debug('Message deleted successfully.')
 
     def check_inbox(self, request_url, auth_data):
         filter_parameters_string = self._get_filter_parameters_string()
@@ -195,7 +196,7 @@ class SendEmailTest(TestCase):
         if response.status_code != 200:
             raise AssertionError('Something went wrong while sending check inbox request to the server. Response '
                                  f'status code: {response.status_code}')
-        print("Inbox checked successfully.")
+        logging.debug('Inbox checked successfully.')
         return response.json()['data']
 
     def _get_filter_parameters_string(self):
@@ -210,4 +211,5 @@ class SendEmailTest(TestCase):
 
 
 if __name__ == '__main__':
+    # logging.basicConfig(level=logging.DEBUG)
     main()
