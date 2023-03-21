@@ -238,8 +238,10 @@ class Bot:
 if __name__ == '__main__':
     log = logging.getLogger('bot_log')
     configure_logging()
+
     scheduler = Scheduler()
     scheduler.start()
+
     bot = Bot(config.TOKEN, config.GROUP_ID, scheduler)
     scheduler.schedule_all_notifications(bot)
     bot.run()
