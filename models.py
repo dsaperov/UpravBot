@@ -1,4 +1,5 @@
 import json
+from collections import defaultdict
 
 from pony.orm import Database, Required, LongStr
 
@@ -31,13 +32,14 @@ class UserState(database.Entity):
         self.context_json = json.dumps(value)
 
     def update_context(self, *args):
-        context = self.context
+        context = defaultdict(dict, self.context)
         keys = list(args[:-1])
         value = args[-1]
         if len(keys) == 1:
             context[keys[0]] = value
         else:
-            context[keys.pop(0)] = self._get_nested_context(keys, value)
+            top_key = keys.pop(0)
+            context[top_key].update(self._get_nested_context(keys, value))
         self.context = context
 
     def _get_nested_context(self, keys, value):
