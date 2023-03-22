@@ -48,7 +48,7 @@ def get_email_data(context, user_data):
     body = 'Добрый день! Прилагаю показания счетчиков.\n\n'
     meters_data = context['meters_data']
     for meter_name in context['meters_ordered']:
-        body += f'{meter_name} - {meters_data[meter_name]}\n'
+        body += f'{meter_name.capitalize()} - {meters_data[meter_name]}\n'
     body += '\n' \
             '---\n' \
             'С уважением,\n' \
