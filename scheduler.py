@@ -39,4 +39,6 @@ class Scheduler(BackgroundScheduler):
             else:
                 notification_datetime = datetime(year + 1, 1, notification_day, hour=3)
         meters_list = meters.split(', ')
-        self.add_job(bot.send_notification_message, next_run_time=notification_datetime, args=[user_id, meters_list])
+        self.add_job(bot.send_notification_message, id=user_id, next_run_time=notification_datetime,
+                     args=[user_id, meters_list])
+

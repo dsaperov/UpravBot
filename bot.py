@@ -209,6 +209,10 @@ class Bot:
             return
         if 'edit' in scenario_name:
             # Редактирование уже занесенной в БД записи
+            date, meters = context.get('date', user_subscribed.date), context.get('meters', user_subscribed.meters)
+            if date != user_subscribed.date or meters != user_subscribed.meters:
+                self.scheduler.remove_job(user_id)
+                self.scheduler.schedule_notification(bot, date, user_id, meters)
             user_subscribed.set(**context)
         else:
             # Занесение записи с данными пользователя в БД и планирование отправки уведомления vk
