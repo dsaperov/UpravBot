@@ -19,9 +19,16 @@ class UserState(database.Entity):
     context_json = Required(LongStr, column=CONTEXT_COLUMN_NAME)
 
     def __init__(self, **kwargs):
+        self._process_kwargs(kwargs)
+        super().__init__(**kwargs)
+
+    def set(self, **kwargs):
+        self._process_kwargs(kwargs)
+        super().set(**kwargs)
+
+    def _process_kwargs(self, kwargs):
         if self.CONTEXT_COLUMN_NAME in kwargs:
             kwargs['context_json'] = json.dumps(kwargs.pop(self.CONTEXT_COLUMN_NAME))
-        super().__init__(**kwargs)
 
     @property
     def context(self):

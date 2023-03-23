@@ -131,7 +131,11 @@ class Bot:
             context = {'current_meter': current_meter, 'meters_data': {}, 'meters_ordered': meters}
         else:
             context = {}
-        UserState(user_id=user_id, scenario_name=scenario_name, step_name=first_step_name, context=context)
+        user_state = UserState.get(user_id=user_id)
+        if user_state:
+            user_state.set(scenario_name=scenario_name, step_name=first_step_name, context=context)
+        else:
+            UserState(user_id=user_id, scenario_name=scenario_name, step_name=first_step_name, context=context)
         return text_to_send
 
     def continue_scenario(self, user_state, text, user_subscribed):
