@@ -198,7 +198,6 @@ class Bot:
                 msg = str(errors)
             log.info(msg)
             user_state.delete()
-            self.scheduler.schedule_notification(bot, user_subscribed.date, user_id, user_subscribed.meters)
             return
         if 'edit' in scenario_name:
             # Редактирование уже занесенной в БД записи
