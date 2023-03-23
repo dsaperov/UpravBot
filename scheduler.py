@@ -1,9 +1,12 @@
-from datetime import datetime
+import logging
 
 from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.cron import CronTrigger
 from pony.orm import db_session, select
 
 from models import SubscribedUsers
+
+log = logging.getLogger('bot_log')
 
 
 class Scheduler(BackgroundScheduler):
@@ -30,15 +33,11 @@ class Scheduler(BackgroundScheduler):
         :param int notification_day: день, указанный пользователем в качестве дня отправки показаний счетчиков
         :param str meters: строка, в которой перечислены типы счетчиков, показания по которым следует передать
         """
-        now = datetime.now()
-        year, month = now.year, now.month
-        notification_datetime = datetime(year, month, notification_day, hour=3)
-        if notification_datetime < now:
-            if month < 12:
-                notification_datetime = datetime(year, month + 1, notification_day, hour=3)
-            else:
-                notification_datetime = datetime(year + 1, 1, notification_day, hour=3)
         meters_list = meters.split(', ')
-        self.add_job(bot.send_notification_message, id=user_id, next_run_time=notification_datetime,
-                     args=[user_id, meters_list])
+        cron_trigger = CronTrigger(day=notification_day, hour=23, minute=42)
+        job = self.add_job(bot.send_notification_message, id=user_id, trigger=cron_trigger, args=[user_id, meters_list])
+        log.debug(f'В планировщик добавлена новая задача: {job}')
 
+    def remove_job(self, job_id, jobstore=None):
+        super().remove_job(job_id, jobstore)
+        log.debug(f'Из планировщика удалена задача с id {job_id}')

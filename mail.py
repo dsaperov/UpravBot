@@ -43,12 +43,12 @@ def get_email_data(context, user_data):
     типы счетчиков)
     """
     email_to = user_data.email
-    subject = f'Показания счётчиков, {user_data.address}'
+    subject = f'Показания счётчиков ({user_data.address})'
 
     body = 'Добрый день! Прилагаю показания счетчиков.\n\n'
     meters_data = context['meters_data']
     for meter_name in context['meters_ordered']:
-        body += f'{meter_name.capitalize()} - {meters_data[meter_name]}\n'
+        body += f'{meter_name.capitalize()} — {meters_data[meter_name]}\n'
     body += '\n' \
             '---\n' \
             'С уважением,\n' \
