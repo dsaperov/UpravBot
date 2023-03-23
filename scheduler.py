@@ -38,3 +38,6 @@ class Scheduler(BackgroundScheduler):
         job = self.add_job(bot.send_notification_message, id=user_id, trigger=cron_trigger, args=[user_id, meters_list])
         log.debug(f'В планировщик добавлена новая задача: {job}')
 
+    def remove_job(self, job_id, jobstore=None):
+        super().remove_job(job_id, jobstore)
+        log.debug(f'Из планировщика удалена задача с id {job_id}')
