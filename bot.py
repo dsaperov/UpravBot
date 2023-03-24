@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import logging
+import requests
 import threading
 from smtplib import SMTPException
 
@@ -38,6 +39,9 @@ def configure_logging():
 
 
 class Bot:
+    TIMEOUT_ERRORS = (requests.exceptions.ConnectionError, TimeoutError, requests.exceptions.Timeout,
+                      requests.exceptions.ConnectTimeout, requests.exceptions.ReadTimeout)
+
     def __init__(self, token, group_id, scheduler):
         """
         :param token: секретный токен
@@ -51,11 +55,15 @@ class Bot:
 
     def run(self):
         """Запуск бота."""
-        for event in self.long_poll.listen():
+        while True:
             try:
-                self.handle_event(event)
-            except Exception:
-                log.exception('Ошибка в обработке события.')
+                for event in self.long_poll.listen():
+                    try:
+                        self.handle_event(event)
+                    except Exception:
+                        log.exception(f'Ошибка в обработке события.')
+            except self.TIMEOUT_ERRORS as exc:
+                log.error(f'Превышено время ожидания ответа от сервера. Ошибка: {exc}')
 
     @db_session
     def handle_event(self, event):

@@ -34,7 +34,7 @@ class Scheduler(BackgroundScheduler):
         :param str meters: строка, в которой перечислены типы счетчиков, показания по которым следует передать
         """
         meters_list = meters.split(', ')
-        cron_trigger = CronTrigger(day=notification_day, hour=23, minute=42)
+        cron_trigger = CronTrigger(day=notification_day, hour=3)
         job = self.add_job(bot.send_notification_message, id=user_id, trigger=cron_trigger, args=[user_id, meters_list])
         log.debug(f'В планировщик добавлена новая задача: {job}')
 
